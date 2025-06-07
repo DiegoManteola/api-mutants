@@ -1,0 +1,4 @@
+dna:
+  sequence-length: 4        # largo para coincidencia
+  required-matches: 2       # coincidencias requeridas
+  valid-bases: [A, T, C, G] # caracteres válidos
