@@ -1,11 +1,13 @@
 package com.diegomanteola.mutants.controller;
 
-import com.diegomanteola.mutants.dto.DnaRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -18,24 +20,19 @@ import static org.junit.jupiter.api.Assertions.*;
                 "spring.flyway.enabled=false"
         }
 )
-class MutantControllerIT {
+class StatsControllerIT {
 
     @Autowired
     private TestRestTemplate rest;
 
     @Test
-    void postMutantReturns200() {
-        var dna = new DnaRequest(new String[]{
-                "ATGCGA","CAGTGC","TTATGT","AGAAGG","CCCCTA","TCACTG"});
-        var resp = rest.postForEntity("/mutant", dna, Void.class);
-        assertEquals(HttpStatus.OK, resp.getStatusCode());
-    }
+    void statsReturns200() {
+        ResponseEntity<Map> resp = rest.getForEntity("/stats", Map.class);
 
-    @Test
-    void postHumanReturns403() {
-        var dna = new DnaRequest(new String[]{
-                "ATGCGA","CAGTGC","TTATTT","AGACGG","GCGTCA","TCACTG"});
-        var resp = rest.postForEntity("/mutant", dna, Void.class);
-        assertEquals(HttpStatus.FORBIDDEN, resp.getStatusCode());
+        assertEquals(HttpStatus.OK, resp.getStatusCode());
+        assertNotNull(resp.getBody());
+        assertTrue(resp.getBody().containsKey("count_mutant_dna"));
+        assertTrue(resp.getBody().containsKey("count_human_dna"));
+        assertTrue(resp.getBody().containsKey("ratio"));
     }
 }

@@ -8,7 +8,7 @@ import java.util.Set;
 
 @Getter @Setter
 @Configuration
-@ConfigurationProperties(prefix = "dna")   // mantiene el mismo prefijo en YAML
+@ConfigurationProperties(prefix = "dna")
 public class DnaConfig {
 
     private int sequenceLength = 4;

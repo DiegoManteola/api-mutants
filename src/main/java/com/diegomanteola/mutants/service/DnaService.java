@@ -14,14 +14,14 @@ import java.util.Set;
 public class DnaService {
 
     private final DnaRepository repo;
-    private final int L, needed;
-    private final Set<Character> valid;
+    private final int seqLength, reqMatches;
+    private final Set<Character> validBases;
 
     public DnaService(DnaConfig cfg, DnaRepository repo) {
         this.repo = repo;
-        this.L = cfg.getSequenceLength();
-        this.needed = cfg.getRequiredMatches();
-        this.valid = cfg.getValidBases();
+        this.seqLength = cfg.getSequenceLength();
+        this.reqMatches = cfg.getRequiredMatches();
+        this.validBases = cfg.getValidBases();
     }
 
     public boolean isMutant(String[] dna) {
@@ -37,35 +37,42 @@ public class DnaService {
                 .map(DnaEntity::isMutant)
                 .orElseGet(() -> {
                     boolean result = compute(dna);
-                    repo.save(new DnaEntity(hash, result));   // único por constraint
+                    repo.save(new DnaEntity(hash, result));
                     return result;
                 });
     }
 
     private boolean compute(String[] dna) {
-
         int n = dna.length;
-        if (n < L) return false;
-
-        char[][] g = new char[n][n];
-
         int found = 0;
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                char b = g[i][j];
+                char b = get(dna, i, j);
 
-                if (j <= n - L && check(g, b, i, j, 0, 1) && ++found >= needed) return true;
-                if (i <= n - L && check(g, b, i, j, 1, 0) && ++found >= needed) return true;
-                if (i <= n - L && j <= n - L && check(g, b, i, j, 1, 1) && ++found >= needed) return true;
-                if (i <= n - L && j >= L - 1 && check(g, b, i, j, 1, -1) && ++found >= needed) return true;
+                if (j <= n - seqLength && check(dna, b, i, j, 0, 1) && ++found >= reqMatches) return true;
+                if (i <= n - seqLength && check(dna, b, i, j, 1, 0) && ++found >= reqMatches) return true;
+                if (i <= n - seqLength && j <= n - seqLength && check(dna, b, i, j, 1, 1) && ++found >= reqMatches) return true;
+                if (i <= n - seqLength && j >= seqLength - 1 && check(dna, b, i, j, 1, -1) && ++found >= reqMatches) return true;
             }
         }
         return false;
     }
 
+    private char get(String[] dna, int row, int col) {
+        return Character.toUpperCase(dna[row].charAt(col));
+    }
+
+    private boolean check(String[] dna, char b, int i, int j, int di, int dj) {
+        for (int k = 1; k < seqLength; k++) {
+            if (get(dna, i + di*k, j + dj*k) != b) return false;
+        }
+        return true;
+    }
+
     private void validateMatrix(String[] dna) {
         int n = dna.length;
-        if (n < L) throw new IllegalArgumentException("Matriz muy chica");
+        if (n < seqLength) throw new IllegalArgumentException("Matriz muy chica");
 
         for (int i = 0; i < n; i++) {
             if (dna[i].length() != n)
@@ -73,18 +80,11 @@ public class DnaService {
 
             for (int j = 0; j < n; j++) {
                 char c = Character.toUpperCase(dna[i].charAt(j));
-                if (!valid.contains(c)) {
+                if (!validBases.contains(c)) {
                     throw new IllegalArgumentException(
                             "Base inválida: '" + c + "' en fila " + (i + 1) + ", columna " + (j + 1));
                 }
             }
         }
-    }
-
-    private boolean check(char[][] g, char b, int i, int j, int di, int dj) {
-        for (int k = 1; k < L; k++) {
-            if (g[i + di * k][j + dj * k] != b) return false;
-        }
-        return true;
     }
 }

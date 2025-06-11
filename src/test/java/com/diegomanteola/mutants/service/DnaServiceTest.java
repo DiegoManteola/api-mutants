@@ -86,4 +86,34 @@ class DnaServiceTest {
 
         verify(repo, never()).save(any());
     }
+
+    @Test
+    @DisplayName("Devuelve false cuando la matriz es menor que 4×4 y no toca la BD")
+    void tooSmallMatrixReturnsFalse() {
+        String[] tiny = { "ATG", "CAG", "TTA" };   // 3 × 3
+
+        assertThrows(IllegalArgumentException.class, () -> sut.isMutant(tiny)); // resultado esperado
+
+        verifyNoInteractions(repo); // repo nunca consultado
+    }
+
+    @Test
+    @DisplayName("Devuelve false cuando la matriz no es cuadrada")
+    void notSquareMatrixReturnsFalse() {
+        String[] notSquare = { "ATGA", "CAGA", "TTAA" };   // 4 × 3
+
+        assertThrows(IllegalArgumentException.class, () -> sut.isMutant(notSquare)); // resultado esperado
+
+        verifyNoInteractions(repo); // repo nunca consultado
+    }
+
+    @Test
+    @DisplayName("Devuelve false cuando la matriz no es cuadrada V2")
+    void notSquareMatrixV2ReturnsFalse() {
+        String[] notSquare = { "ATGA", "CAGA", "TTAA", "TTAA", "TTAA" };   // 4 × 3
+
+        assertThrows(IllegalArgumentException.class, () -> sut.isMutant(notSquare)); // resultado esperado
+
+        verifyNoInteractions(repo); // repo nunca consultado
+    }
 }
