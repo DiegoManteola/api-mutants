@@ -1,4 +1,20 @@
 dna:
-  sequence-length: 4        # largo para coincidencia
-  required-matches: 2       # coincidencias requeridas
-  valid-bases: [A, T, C, G] # caracteres válidos
+  sequence-length: 4
+  required-matches: 2
+  valid-bases: [A, T, C, G]
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate     # Flyway gobierna el esquema
+    open-in-view: false
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
