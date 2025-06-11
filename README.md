@@ -5,24 +5,41 @@ Descripción:
 Servicio REST que detecta si un ADN pertenece a un mutante.
 Algoritmo O(N²) con secuencias parametrizables, persistencia única por hash SHA-256, caché Redis para evitar recalcular y estadísticas globales.
 
+Requisitos
+| Herramienta    | Versión mínima              |
+| -------------- | --------------------------- |
+| Java JDK       | **21**                      |
+| Maven Wrapper  | integrado (`./mvnw`)        |
+| Docker Desktop | 4.x (con Docker Compose v2) |
+
+Clonado y Arranque rápido:
+"
+git clone https://github.com/<TU_USUARIO>/mutants.git
+cd mutants
+
+# Levantar infraestructura (PostgreSQL 15 + Redis 7)
+docker compose up -d
+
+# Compilar, correr tests y levantar la API
+./mvnw clean verify
+./mvnw spring-boot:run
+"
+
 Variables de entorno:
 Se cargan desde el archivo .env en la raíz.
 Ejemplo:
 "
-POSTGRES_DB=dnabase
-POSTGRES_USER=dnauser
-POSTGRES_PASSWORD=dnapass
-
-SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/dnabase
-SPRING_DATASOURCE_USERNAME=dnauser
-SPRING_DATASOURCE_PASSWORD=dnapass
+PGHOST=
+PGPORT=
+PGDATABASE=
+PGUSER=
+PGPASSWORD=
 "
 Nota: Incluye un .env.example con los nombres de las variables.
 
 Migraciones Flyway:
 Al levantar la app, Flyway aplica src/main/resources/db/migration/V1__init.sql
 y crea la tabla dna con índice parcial para el conteo de mutantes.
-
 
 Ejecutar pruebas y cobertura:
 ./mvnw verify     # tests + informe JaCoCo
