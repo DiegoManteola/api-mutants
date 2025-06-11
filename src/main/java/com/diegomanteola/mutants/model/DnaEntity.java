@@ -14,7 +14,7 @@ public class DnaEntity {
     @Column(name = "is_mutant", nullable = false)
     private boolean mutant;
 
-    protected DnaEntity() {}               // JPA only
+    protected DnaEntity() {}
 
     public DnaEntity(String hash, boolean mutant) {
         this.hash = hash;
