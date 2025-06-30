@@ -1,4 +1,4 @@
-# Desafío Mutantes – Exámen Mercado Libre
+# Ejercicio - Deteccion de conjuntos de letras en línea en matriz
 Implementación en Java 21 + Spring Boot 3 con PostgreSQL, Flyway, Redis Cache y Docker Compose.
 
 # Descripción:
